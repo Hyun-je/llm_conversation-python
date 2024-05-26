@@ -1,9 +1,29 @@
 import socket
+import json
+import time
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('', 8001))
 
-while True:
+class Receive:
 
-    msg, addr = sock.recvfrom(1024)
-    print(msg)
+    def __init__(self, ip='', port=8001):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind((ip, port))
+
+    def receive_dict(self):
+        bytes, addr = self.sock.recvfrom(1024)
+        dict = json.loads(bytes.decode('utf-8'))
+        return dict
+
+    async def receive_dict_async(self, dict):
+        bytes, addr = self.sock.recvfrom(1024)
+        dict = json.loads(bytes.decode('utf-8'))
+        return dict
+
+
+if __name__ == '__main__':
+
+    receiver = Receive()
+
+    while True:
+        dict = receiver.receive_dict()
+        print(dict)
