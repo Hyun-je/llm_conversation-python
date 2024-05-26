@@ -13,10 +13,9 @@ class Broadcast:
     def send_dict(self, dict, ip='192.168.0.255', port=8001):
         bytes = json.dumps(dict).encode('utf-8')
         self.sock.sendto(bytes, (ip, port))
-        print(f'{socket.gethostname()} -> {dict}')
 
     async def send_dict_async(self, dict, ip='192.168.0.255', port=8001):
-        self.send_dict
+        self.send_dict(dict, ip, port)
 
 
 
@@ -26,10 +25,14 @@ if __name__ == '__main__':
     count = 0
 
     while True:
-        # asyncio.run(broadcaster.send_dict_async({'test': 1, 'test2': 2}))
-        broadcaster.send_dict({
-                    'sender': socket.gethostname(),
-                    'count': count
-                })
+
+        dict = {
+            'sender': socket.gethostname(),
+            'count': count
+        }
+
+        asyncio.run(broadcaster.send_dict_async(dict))
+        print(f'{socket.gethostname()} -> {dict}')
+
         count += 1
         time.sleep(1)

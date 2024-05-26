@@ -15,9 +15,7 @@ class Receive:
         return dict
 
     async def receive_dict_async(self, dict):
-        bytes, addr = self.sock.recvfrom(1024)
-        dict = json.loads(bytes.decode('utf-8'))
-        return dict
+        return self.receive_dict()
 
 
 if __name__ == '__main__':
@@ -25,5 +23,6 @@ if __name__ == '__main__':
     receiver = Receive()
 
     while True:
+
         dict = receiver.receive_dict()
-        print(dict)
+        print(f'{socket.gethostname()} <- {dict}')
