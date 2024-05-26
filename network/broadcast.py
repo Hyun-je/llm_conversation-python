@@ -28,6 +28,7 @@ if __name__ == '__main__':
 
         dict = {
             'sender': socket.gethostname(),
+            'time': time.strftime('%Y-%m-%d %H:%M:%S'),
             'count': count
         }
 
