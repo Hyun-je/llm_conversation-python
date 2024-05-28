@@ -29,7 +29,7 @@ class UDPListener:
         message = data.decode()
         try:
             json_data = json.loads(message)
-            self.callback(json_data)
+            self.callback(json_data, addr)
         except json.JSONDecodeError:
             print(f"Received non-JSON data: {message}")
 
@@ -46,8 +46,8 @@ if __name__ == '__main__':
         ip = '0.0.0.0'  # Listen on all interfaces
         port = 8001    # Replace with your port
 
-        def callback(data):
-            print(f"Received data: {data}")
+        def callback(data, addr):
+            print(f"Received data: {data} {addr=}")
 
         listener = UDPListener(ip, port, callback)
         await listener.listen()
