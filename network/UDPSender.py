@@ -4,7 +4,7 @@ import json
 import time
 
 
-class Broadcast:
+class UDPSender:
 
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,7 +21,7 @@ class Broadcast:
 
 if __name__ == '__main__':
 
-    broadcaster = Broadcast()
+    sender = UDPSender()
     count = 0
 
     while True:
@@ -32,7 +32,7 @@ if __name__ == '__main__':
             'count': count
         }
 
-        asyncio.run(broadcaster.send_dict_async(dict))
+        asyncio.run(sender.send_dict_async(dict))
         print(f'{socket.gethostname()} -> {dict}')
 
         count += 1
