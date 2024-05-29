@@ -4,10 +4,10 @@ import pyaudio
 
 class VoiceSynthesizer:
 
-    def __init__(self, voice_model="voice/en_US-lessac-medium.onnx"):
+    def __init__(self, voice_model='voice/en_US-lessac-medium.onnx'):
         self.piper = PiperVoice.load(
             voice_model,
-            config_path=f"{voice_model}.json",
+            config_path=f'{voice_model}.json',
             use_cuda=False
         )
         self.pyaudio = pyaudio.PyAudio()
@@ -24,8 +24,8 @@ class VoiceSynthesizer:
 
     def make_stream(self, text):
         synthesize_args = {
-            "length_scale": 1.5,
-            "sentence_silence": 0.5,
+            'length_scale': 1.5,
+            'sentence_silence': 0.5,
         }
         audio_stream = self.piper.synthesize_stream_raw(text, **synthesize_args)
 
