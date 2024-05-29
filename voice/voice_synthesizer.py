@@ -5,7 +5,7 @@ import pyaudio
 
 class VoiceSynthesizer:
 
-    def __init__(self, voice_model="en_US-lessac-medium.onnx"):
+    def __init__(self, voice_model="voice/en_US-lessac-medium.onnx"):
         self.piper = PiperVoice.load(
             voice_model,
             config_path=f"{voice_model}.json",
