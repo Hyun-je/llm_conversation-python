@@ -2,9 +2,11 @@ import asyncio
 import json
 
 class UDPListener:
-    def __init__(self, ip: str, port: int, callback):
+
+    def __init__(self, ip: str, port: int, uuid, callback):
         self.ip = ip
         self.port = port
+        self.uuid = uuid
         self.callback = callback
 
     async def listen(self):
@@ -13,7 +15,8 @@ class UDPListener:
         # Create datagram endpoint
         transport, _ = await loop.create_datagram_endpoint(
             lambda: self,
-            local_addr=(self.ip, self.port))
+            local_addr=(self.ip, self.port)
+        )
 
         try:
             while True:
@@ -29,7 +32,8 @@ class UDPListener:
         message = data.decode()
         try:
             json_data = json.loads(message)
-            self.callback(json_data, addr)
+            if ('uuid' in json_data) and (json_data['uuid'] != self.uuid):
+                self.callback(json_data, addr)
         except json.JSONDecodeError:
             print(f"Received non-JSON data: {message}")
 
@@ -49,7 +53,7 @@ if __name__ == '__main__':
         def callback(data, addr):
             print(f"Received data: {data} {addr=}")
 
-        listener = UDPListener(ip, port, callback)
+        listener = UDPListener(ip, port, '', callback)
         await listener.listen()
 
     # Run the main function
