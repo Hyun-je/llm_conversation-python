@@ -1,4 +1,3 @@
-import sys
 from piper.voice import PiperVoice
 import pyaudio
 
@@ -19,6 +18,9 @@ class VoiceSynthesizer:
     def synthesis(self, text):
         audio_stream = self.make_stream(text)
         self.play_stream(audio_stream)
+
+    async def synthesis_async(self, text):
+        self.synthesis(text)
 
     def make_stream(self, text):
         synthesize_args = {
