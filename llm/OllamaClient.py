@@ -3,8 +3,10 @@ import ollama
 
 class OllamaClient:
 
-    def __init__(self, model='tinyllama'):
-        pass
+    def __init__(self, model='tinyllama', system_prompt=''):
+        self.messages = []
+        if system_prompt is not '':
+            self.messages.append({'role': 'system', 'content': system_prompt})
 
     def chat(self, text):
         answer = ''

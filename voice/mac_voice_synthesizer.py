@@ -8,6 +8,9 @@ class VoiceSynthesizer:
     def __init__(self, voice_model='com.apple.voice.compact.en-US.Samantha'):
         self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(voice_model)
 
+    def get_voice_list(self):
+        print(NSSpeechSynthesizer.availableVoices())
+
     def synthesis(self, text):
         self.speech.startSpeakingString_(text)
         while self.speech.isSpeaking():
