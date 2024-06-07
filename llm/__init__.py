@@ -1,2 +1,2 @@
 from .OllamaClient import OllamaClient
-from .GPTClient import GPTClient
+from .OpenAIClient import OpenAIClient
