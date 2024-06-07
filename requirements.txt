@@ -1,3 +1,4 @@
 ollama
+openai
 piper-tts
 pyaudio
