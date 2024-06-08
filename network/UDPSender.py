@@ -12,7 +12,7 @@ class UDPSender:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-    def send_dict(self, content, ip='10.0.1.255', port=8001):
+    def send_dict(self, content, ip='255.255.255.255', port=8001):
         dict = {
             'uuid': self.uuid, 
             'time': time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -24,7 +24,7 @@ class UDPSender:
         self.sock.sendto(bytes, (ip, port))
         
 
-    async def send_dict_async(self, dict, ip='10.0.1.255', port=8001):
+    async def send_dict_async(self, dict, ip='255.255.255.255', port=8001):
         self.send_dict(dict, ip, port)
 
 
