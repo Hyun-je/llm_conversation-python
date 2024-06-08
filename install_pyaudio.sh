@@ -9,4 +9,4 @@ sudo ldconfig
 cd ..
 rm -rf portaudio
 
-sudo pip install pyaudio
+sudo pip install pyaudio --break-system-packages
