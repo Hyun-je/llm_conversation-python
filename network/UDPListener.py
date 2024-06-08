@@ -1,9 +1,10 @@
 import asyncio
 import json
+import uuid
 
 class UDPListener:
 
-    def __init__(self, uuid, ip='0.0.0.0', port=8001, callback=None):
+    def __init__(self, uuid=str(uuid.uuid4()), ip='0.0.0.0', port=8001, callback=None):
         self.ip = ip
         self.port = port
         self.uuid = uuid
