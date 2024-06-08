@@ -3,7 +3,7 @@ import json
 
 class UDPListener:
 
-    def __init__(self, ip: str, port: int, uuid, callback):
+    def __init__(self, uuid, ip='0.0.0.0', port=8001, callback=None):
         self.ip = ip
         self.port = port
         self.uuid = uuid
@@ -33,7 +33,10 @@ class UDPListener:
         try:
             json_data = json.loads(message)
             if ('uuid' in json_data) and (json_data['uuid'] != self.uuid):
-                self.callback(json_data, addr)
+                if self.callback is not None:
+                    self.callback(json_data, addr)
+                else:
+                    print(f"Received data: {json_data} {addr=}")
         except json.JSONDecodeError:
             print(f"Received non-JSON data: {message}")
 
@@ -47,13 +50,8 @@ class UDPListener:
 if __name__ == '__main__':
 
     async def main():
-        ip = '0.0.0.0'  # Listen on all interfaces
-        port = 8001    # Replace with your port
 
-        def callback(data, addr):
-            print(f"Received data: {data} {addr=}")
-
-        listener = UDPListener(ip, port, '', callback)
+        listener = UDPListener()
         await listener.listen()
 
     # Run the main function
