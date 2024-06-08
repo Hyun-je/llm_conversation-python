@@ -16,6 +16,8 @@ class VoiceSynthesizer:
         self.pyaudio.terminate()
 
     def filter_text(self, text):
+        # Remove any non-ASCII characters.
+        text = ''.join([char for char in text if ord(char) < 128])
         return text
 
     def synthesis(self, text):
