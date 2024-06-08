@@ -15,7 +15,11 @@ class VoiceSynthesizer:
     def __del__(self):
         self.pyaudio.terminate()
 
+    def filter_text(self, text):
+        return text
+
     def synthesis(self, text):
+        text = self.filter_text(text)
         audio_stream = self.make_stream(text)
         self.play_stream(audio_stream)
 
