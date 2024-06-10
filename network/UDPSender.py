@@ -12,7 +12,7 @@ class UDPSender:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-    def send_dict(self, message_type, content={}, ip='255.255.255.255', port=8001):
+    def send_dict(self, message_type, content={}, ip='255.255.255.255', port=8001, verbose=False):
         dict = {
             'uuid': self.uuid, 
             'time': time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -21,11 +21,12 @@ class UDPSender:
             'content': content
         }
         bytes = json.dumps(dict).encode('utf-8')
-        print(f"[{dict['time']}] {dict['uuid'][:8]} -> {message_type} {content}")
         self.sock.sendto(bytes, (ip, port))
+        if verbose:
+            print(f"[{dict['time']}] {dict['uuid'][:8]} -> {message_type} {content}")
         
-    async def send_dict_async(self, message_type, content={}, ip='255.255.255.255', port=8001):
-        self.send_dict(message_type, content, ip, port)
+    async def send_dict_async(self, message_type, content={}, ip='255.255.255.255', port=8001, verbose=False):
+        self.send_dict(message_type, content, ip, port, verbose)
 
 
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
             'message': f'{count} message from {socket.gethostname()}',
         }
 
-        asyncio.run(sender.send_dict_async(message_type, content))
+        asyncio.run(sender.send_dict_async(message_type, content, verbose=True))
 
         count += 1
         time.sleep(1)
