@@ -22,6 +22,8 @@ class UDPManager:
     def add_callback(self, message_type, callback):
         self.callbacks[message_type] = callback
 
+
+
     def on_received_message(self, data, addr):
         message_type = data['message_type']
         if message_type in self.callbacks:
@@ -31,30 +33,20 @@ class UDPManager:
 
     def on_received_device_ping(self, data, addr):
         if data['uuid'] not in self.device_list:
+            hostname = data['hostname']
             self.device_list[data['uuid']] = {
-                'hostname': data['hostname'],
-                'addr': addr,
+                'hostname': hostname,
+                'address': addr,
                 'last_seen': time.time()
             }
-            print(f"New device found: {data['uuid']} {addr=}")
+            print(f"New device found: {hostname} {addr} {data['uuid']} ")
         else:
             self.device_list[data['uuid']]['last_seen'] = time.time()
 
     def on_received_unknown(self, data, addr):
         print(f"Warning! Received unknown message: {data} {addr=}")
 
-    async def remove_inactive_devices(self, timeout=10):
-        while True:
-            await asyncio.sleep(5)
-            current_time = time.time()
-            devices_to_remove = []
-            for uuid, device in self.device_list.items():
-                if current_time - device['last_seen'] > timeout:
-                    print(f"Device removed: {uuid}")
-                    devices_to_remove.append(uuid)
-            
-            for uuid in devices_to_remove:
-                del self.device_list[uuid]
+
 
     async def send_ping(self):
         while True:
@@ -62,6 +54,19 @@ class UDPManager:
             message_type = 'device_ping'
             content = {}
             self.sender.send_dict(message_type, content)
+
+    async def remove_inactive_devices(self, timeout=6):
+        while True:
+            await asyncio.sleep(4)
+            current_time = time.time()
+            devices_to_remove = []
+            for uuid, device in self.device_list.items():
+                if current_time - device['last_seen'] > timeout:
+                    print(f"Device removed: {device['hostname']} {device['address']} {uuid}")
+                    devices_to_remove.append(uuid)
+            
+            for uuid in devices_to_remove:
+                del self.device_list[uuid]
 
     async def run(self):
         await asyncio.gather(
