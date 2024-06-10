@@ -1,4 +1,5 @@
 ollama
 openai
-piper-tts
-pyaudio
+piper-tts; sys_platform == 'linux'
+pyaudio; sys_platform == 'linux'
+pyobjc; sys_platform == 'darwin'
