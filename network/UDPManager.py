@@ -50,14 +50,14 @@ class UDPManager:
 
     async def send_ping(self):
         while True:
-            await asyncio.sleep(3)
+            await asyncio.sleep(2)
             message_type = 'device_ping'
             content = {}
             self.sender.send_dict(message_type, content)
 
     async def remove_inactive_devices(self, timeout=6):
         while True:
-            await asyncio.sleep(4)
+            await asyncio.sleep(3)
             current_time = time.time()
             devices_to_remove = []
             for uuid, device in self.device_list.items():
