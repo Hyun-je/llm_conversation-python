@@ -1,9 +1,6 @@
 # import common module
 import argparse
 import asyncio
-import socket
-import time
-import ollama
 
 # import my module
 import network
@@ -13,42 +10,34 @@ import voice
 
 async def main(args):
 
-    ip = '0.0.0.0'  # Listen on all interfaces
-    port = 8001    # Replace with your port
-
+    # Setup voice synthesizer
     print('load voice synth')
     synthesizer = voice.VoiceSynthesizer()
 
+    # Setup llm client
+    answer = ""
 
-    sender = network.UDPSender()
-    answer = input(">>> ")
-
-    dict = {
-        'message': answer
-    }
-    sender.send_dict(dict)
-
-    def callback(data, addr):
-        print(f"Received data: {data} {addr=}")
-
-        answer = input(">>> ")
-
+    # Setup network manager
+    network_manager = network.UDPManager()
+    
+    def on_receive_text_generation(data, addr):
+        print(f"on_receive_text_generation: {data} {addr=}")
+        answer = input('>>> ')
         dict = {
             'message': answer
         }
-        sender.send_dict(dict)
+        network_manager.sender.send_dict('text_generation', dict)
+    network_manager.add_callback('text_generation', on_receive_text_generation)
 
+    def on_receive_speech_completion(data, addr):
+        print(f"on_receive_speech_completion: {data} {addr=}")
         print('synthesis voice...')
-        synthesizer.synthesis(dict['message'])
-
-        print('done!')
-
-
-
+        synthesizer.synthesis(answer)
+    network_manager.add_callback('speech_completion', on_receive_speech_completion)
     
-    listener = network.UDPListener(ip, port, sender.uuid, callback)
     print('Ready!')
-    await listener.listen()
+    on_receive_text_generation(None, None)
+    await network_manager.run()
 
 
 if __name__ == '__main__':

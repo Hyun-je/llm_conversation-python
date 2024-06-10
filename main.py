@@ -1,8 +1,6 @@
 # import common module
 import argparse
 import asyncio
-import socket
-import time
 import ollama
 
 # import my module
@@ -13,26 +11,27 @@ import voice
 
 async def main(args):
 
-    ip = '0.0.0.0'  # Listen on all interfaces
-    port = 8001    # Replace with your port
-
+    # Setup voice synthesizer
     print('load voice synth')
     synthesizer = voice.VoiceSynthesizer()
 
+    # Setup llm client
     print('load ollama client')
-    # client = ollama.Client(host='http://127.0.0.1:11435')
     response = ollama.chat(model='tinyllama', messages=[
     {
         'role': 'user',
         'content': 'Hello!',
     },
     ])
+    answer = ""
 
-    sender = network.UDPSender()
+    # Setup network manager
+    network_manager = network.UDPManager()
+    network_manager.add_callback('text_generation', on_receive_text_generation)
+    network_manager.add_callback('speech_completion', on_receive_speech_completion)
 
-    def callback(data, addr):
-        print(f"Received data: {data} {addr=}")
-
+    def on_receive_text_generation(data, addr):
+        print(f"on_receive_text_generation: {data} {addr=}")
         response = ollama.chat(model='tinyllama', messages=[
         {
             'role': 'user',
@@ -40,23 +39,18 @@ async def main(args):
         },
         ])
         answer = response['message']['content']
-
         dict = {
             'message': answer
         }
-        sender.send_dict(dict)
+        network_manager.sender.send_dict(dict)
 
+    def on_receive_speech_completion(data, addr):
+        print(f"on_receive_speech_completion: {data} {addr=}")
         print('synthesis voice...')
-        synthesizer.synthesis(dict['message'])
-
-        print('done!')
-
-
-
+        synthesizer.synthesis(answer)
     
-    listener = network.UDPListener(ip, port, sender.uuid, callback)
     print('Ready!')
-    await listener.listen()
+    await network_manager.run()
 
 
 if __name__ == '__main__':
