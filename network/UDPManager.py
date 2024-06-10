@@ -12,8 +12,10 @@ class UDPManager:
             ip='0.0.0.0',
             port=8001,
             callback=self.on_received_message)
+        self.device_list = {}
         self.callbacks = {
-            'unknown': self.on_received_message_unknown
+            'device_ping': self.on_received_device_ping,
+            'unknown': self.on_received_unknown
         }
 
     def add_callback(self, message_type, callback):
@@ -26,7 +28,12 @@ class UDPManager:
         else:
             self.callbacks['unknown'](data, addr)
 
-    def on_received_message_unknown(self, data, addr):
+    def on_received_device_ping(self, data, addr):
+        if data['uuid'] not in self.device_list:
+            print(f"New device found: {data['uuid']} {addr=}")
+        self.device_list[data['uuid']] = addr
+
+    def on_received_unknown(self, data, addr):
         print(f"Warning! Received unknown message: {data} {addr=}")
 
     async def send_ping(self):
@@ -45,10 +52,6 @@ class UDPManager:
         
 if __name__ == '__main__':
     
-    def on_receive_device_ping(data, addr):
-        print(f"on_receive_device_ping: {data} {addr=}")
-
     network_manager = UDPManager()
-    network_manager.add_callback('device_ping', on_receive_device_ping)
 
     asyncio.run(network_manager.run())
