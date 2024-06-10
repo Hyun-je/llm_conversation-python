@@ -43,11 +43,17 @@ class UDPManager:
     def on_received_unknown(self, data, addr):
         print(f"Warning! Received unknown message: {data} {addr=}")
 
-    def remove_inactive_devices(self, timeout=10):
-        current_time = time.time()
-        for uuid, device in self.device_list.items():
-            if current_time - device['last_seen'] > timeout:
-                print(f"Device removed: {uuid}")
+    async def remove_inactive_devices(self, timeout=10):
+        while True:
+            await asyncio.sleep(5)
+            current_time = time.time()
+            devices_to_remove = []
+            for uuid, device in self.device_list.items():
+                if current_time - device['last_seen'] > timeout:
+                    print(f"Device removed: {uuid}")
+                    devices_to_remove.append(uuid)
+            
+            for uuid in devices_to_remove:
                 del self.device_list[uuid]
 
     async def send_ping(self):
@@ -56,11 +62,11 @@ class UDPManager:
             message_type = 'device_ping'
             content = {}
             self.sender.send_dict(message_type, content)
-            self.remove_inactive_devices()
 
     async def run(self):
         await asyncio.gather(
             asyncio.create_task(self.send_ping()),
+            asyncio.create_task(self.remove_inactive_devices()),
             asyncio.create_task(self.listener.listen())
         )
         
