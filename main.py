@@ -46,6 +46,7 @@ async def main(args):
         print(f"on_receive_speech_completion: {data} {addr=}")
         print('synthesis voice...')
         synthesizer.synthesis(answer)
+        answer = ''
         network_manager.sender.send_dict(message_type='speech_completion')
 
     network_manager.add_callback('text_generation', on_receive_text_generation)
