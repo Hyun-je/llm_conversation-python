@@ -1,7 +1,11 @@
 import asyncio
 import time
-from UDPSender import UDPSender
-from UDPListener import UDPListener
+if __name__ == '__main__':
+    from UDPSender import UDPSender
+    from UDPListener import UDPListener
+else:
+    from .UDPSender import UDPSender
+    from .UDPListener import UDPListener
 
 
 class UDPManager:
@@ -77,7 +81,6 @@ class UDPManager:
         
         
 if __name__ == '__main__':
-    
     network_manager = UDPManager()
 
     asyncio.run(network_manager.run())
