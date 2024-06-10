@@ -27,12 +27,13 @@ async def main(args):
             'message': answer
         }
         network_manager.sender.send_dict('text_generation', dict)
-    network_manager.add_callback('text_generation', on_receive_text_generation)
-
+    
     def on_receive_speech_completion(data, addr):
         print(f"on_receive_speech_completion: {data} {addr=}")
         print('synthesis voice...')
         synthesizer.synthesis(answer)
+    
+    network_manager.add_callback('text_generation', on_receive_text_generation)
     network_manager.add_callback('speech_completion', on_receive_speech_completion)
     
     print('Ready!')
