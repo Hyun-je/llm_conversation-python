@@ -1,11 +1,14 @@
 import asyncio
+import threading
 import time
+
 if __name__ == '__main__':
     from UDPSender import UDPSender
     from UDPListener import UDPListener
 else:
     from .UDPSender import UDPSender
     from .UDPListener import UDPListener
+
 
 
 class UDPManager:
@@ -52,9 +55,9 @@ class UDPManager:
 
 
 
-    async def send_ping(self):
+    def send_ping(self):
         while True:
-            await asyncio.sleep(2)
+            time.sleep(2)
             message_type = 'device_ping'
             content = {}
             self.sender.send_dict(message_type, content)
@@ -73,8 +76,10 @@ class UDPManager:
                 del self.device_list[uuid]
 
     async def run(self):
+
+        threading.Thread(target=self.send_ping).start()
+
         await asyncio.gather(
-            asyncio.create_task(self.send_ping()),
             asyncio.create_task(self.remove_inactive_devices()),
             asyncio.create_task(self.listener.listen())
         )
