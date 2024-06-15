@@ -11,15 +11,16 @@ class VoiceSynthesizer:
     def get_voice_list(self):
         print(NSSpeechSynthesizer.availableVoices())
 
+    def is_running(self):
+        return self.speech.isSpeaking()
+
     def synthesis(self, text):
         self.speech.startSpeakingString_(text)
         while self.speech.isSpeaking():
             pass
 
-    async def synthesis_async(self, text):
+    def synthesis_async(self, text):
         self.speech.startSpeakingString_(text)
-        while self.speech.isSpeaking():
-            asyncio.sleep(1)
 
 
 if __name__ == '__main__':

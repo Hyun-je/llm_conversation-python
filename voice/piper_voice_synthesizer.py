@@ -1,3 +1,4 @@
+import threading
 from piper.voice import PiperVoice
 import pyaudio
 
@@ -11,6 +12,7 @@ class VoiceSynthesizer:
             use_cuda=False
         )
         self.pyaudio = pyaudio.PyAudio()
+        self.lock = threading.Lock()
 
     def __del__(self):
         self.pyaudio.terminate()
@@ -19,14 +21,18 @@ class VoiceSynthesizer:
         # Remove any non-ASCII characters.
         text = ''.join([char for char in text if ord(char) < 128])
         return text
+    
+    def is_running(self):
+        return self.lock.is_locked()
 
     def synthesis(self, text):
-        text = self.filter_text(text)
-        audio_stream = self.make_stream(text)
-        self.play_stream(audio_stream)
+        with self.lock:
+            text = self.filter_text(text)
+            audio_stream = self.make_stream(text)
+            self.play_stream(audio_stream)
 
-    async def synthesis_async(self, text):
-        self.synthesis(text)
+    def synthesis_async(self, text):
+        threading.Thread(target=self.synthesis, args=(text,)).start()
 
     def make_stream(self, text):
         synthesize_args = {
