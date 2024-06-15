@@ -54,17 +54,16 @@ class UDPManager:
         print(f"Warning! Received unknown message: {data} {addr=}")
 
 
-
-    def send_ping(self):
+    async def send_ping(self, interval=2):
         while True:
-            time.sleep(2)
+            await asyncio.sleep(interval)
             message_type = 'device_ping'
             content = {}
             self.sender.send_dict(message_type, content)
 
-    async def remove_inactive_devices(self, timeout=6):
+    async def remove_inactive_devices(self, interval=3, timeout=6):
         while True:
-            await asyncio.sleep(3)
+            await asyncio.sleep(interval)
             current_time = time.time()
             devices_to_remove = []
             for uuid, device in self.device_list.items():
@@ -75,17 +74,28 @@ class UDPManager:
             for uuid in devices_to_remove:
                 del self.device_list[uuid]
 
-    async def run(self):
+                
+    def run_async(self):
 
-        threading.Thread(target=self.send_ping).start()
+        async def send_thread():
+            await self.send_ping()
 
-        await asyncio.gather(
-            asyncio.create_task(self.remove_inactive_devices()),
-            asyncio.create_task(self.listener.listen())
-        )
-        
+        async def listen_thread():
+            await asyncio.gather(
+                asyncio.create_task(self.remove_inactive_devices()),
+                asyncio.create_task(self.listener.listen())
+            )
+            
+        threading.Thread(target=lambda: asyncio.run(send_thread())).start()
+        threading.Thread(target=lambda: asyncio.run(listen_thread())).start()
+
         
 if __name__ == '__main__':
     network_manager = UDPManager()
+    network_manager.run_async()
 
-    asyncio.run(network_manager.run())
+    print("Network manager started!")
+
+    while True:
+        print('Device list:')
+        time.sleep(2)

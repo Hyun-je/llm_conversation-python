@@ -1,4 +1,5 @@
 import asyncio
+import threading
 import json
 import uuid
 
@@ -50,10 +51,10 @@ class UDPListener:
 
 if __name__ == '__main__':
 
-    async def main():
-
+    def run():
         listener = UDPListener()
-        await listener.listen()
+        asyncio.run(listener.listen())
 
-    # Run the main function
-    asyncio.run(main())
+    threading.Thread(target=run).start()
+
+    print("Listener started!")
