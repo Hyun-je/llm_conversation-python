@@ -1,2 +1,4 @@
+*.pyc
+
 voice/*.onnx
 voice/*.onnx.json
