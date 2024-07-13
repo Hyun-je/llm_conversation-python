@@ -1,5 +1,14 @@
+# LLM Inference
 ollama
 openai
+
+# Voice Synthesis
 piper-tts; sys_platform == 'linux'
 pyaudio; sys_platform == 'linux'
 pyobjc; sys_platform == 'darwin'
+
+# Network
+udp_broadcaster @ git+https://github.com/Hyun-je/UDP_Broadcaster-python
+
+# State Machine
+python-statemachine
