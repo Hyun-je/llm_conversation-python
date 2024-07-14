@@ -3,11 +3,9 @@ import threading
 import time
 
 if __name__ == '__main__':
-    from UDPSender import UDPSender
-    from UDPListener import UDPListener
+    from UDP import *
 else:
-    from .UDPSender import UDPSender
-    from .UDPListener import UDPListener
+    from . import *
 
 
 

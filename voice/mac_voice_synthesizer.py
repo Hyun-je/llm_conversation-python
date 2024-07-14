@@ -13,6 +13,13 @@ class VoiceSynthesizer:
 
     def is_running(self):
         return self.speech.isSpeaking()
+    
+    def make_stream(self, text):
+        self.text = text
+
+    def play_stram(self):
+        self.synthesis(self.text)
+        self.text = None
 
     def synthesis(self, text):
         self.speech.startSpeakingString_(text)

@@ -28,7 +28,7 @@ class OllamaClient:
 
         return self.answer
     
-    def chat_async(self, text):
+    def chat_async(self, text, callback=None):
         threading.Thread(target=self.chat, args=(text,)).start()
 
     def is_running(self):
