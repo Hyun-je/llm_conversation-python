@@ -147,7 +147,7 @@ def main(args):
             message_type='text_generation',
             content={
                 'receiver': random_device,
-                'message': 'hi, how are you?'
+                'message': 'hi, what is your name?'
             }
         )
 
