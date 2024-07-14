@@ -67,7 +67,7 @@ class VoiceMonitor:
 
     def on_received_start_speaking(self, data, addr):
         self._is_speaking = True
-        self._timeout = 60
+        self._timeout = 600
 
     def on_received_end_speaking(self, data, addr):
         self._is_speaking = False
@@ -110,6 +110,8 @@ def main(args):
     llm_client = llm.OllamaClient(model='qwen2:0.5b', system_prompt='')
 
     device_uuid = str(uuid.uuid4())
+    print("\033[36m", f"My UUID: {device_uuid}", "\033[0m", sep="")
+
     listener = UDPListener(uuid=device_uuid)
     listener.start()
 
@@ -136,7 +138,7 @@ def main(args):
     ping_sender.start()
 
 
-    sender = UDPSender()
+    sender = UDPSender(uuid=device_uuid)
 
     if args.mode == 'active':
         time.sleep(5)
