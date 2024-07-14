@@ -95,7 +95,7 @@ class TextGenerationMonitor:
 
     def on_receive_text_generation(self, data, addr):
         # print(f"on_receive_text_generation: {data} {addr=}")
-        print(f"Message : {data['content']['message']}")
+        print(f"{datetime.now()} Message : {data['content']['message']}")
         print(f"From : {data['uuid']}")
         self._received_text = data['content']['message']
 
@@ -175,7 +175,6 @@ def main(args):
                 received_text = text_generation_monitor._received_text
                 text_generation_monitor._received_text = None
                 generated_text = llm_client.chat(received_text)[:512]
-                filtered_text = ''.join(c for c in generated_text if ord(c) < 128)
                 filtered_text = ''.join(c for c in generated_text if ord(c) < 128)
                 filtered_text = re.sub(' +',' ',filtered_text)
                 filtered_text = re.sub('\n+','\n',filtered_text)
