@@ -8,6 +8,7 @@ import llm
 import voice
 
 from udp_broadcaster import *
+from datetime import datetime
 import uuid
 import threading
 import random
@@ -166,13 +167,12 @@ def main(args):
             if status == 'wait_for_prompt':
                 if text_generation_monitor._received_text is not None:
                     status = 'text_generation'
-                    print("\033[36m", f"{status=}", "\033[0m", sep="")
+                    print("\033[36m", f"{datetime.now()} {status=}", "\033[0m", sep="")
 
             elif status == 'text_generation':
                 received_text = text_generation_monitor._received_text
                 text_generation_monitor._received_text = None
                 generated_text = llm_client.chat(received_text)[:128]
-                print(f'{generated_text=}')
                 voice_stream = synthesizer.make_stream(generated_text)
                 status = 'wait_for_silent'
                 random_device = random.choice(list(device_monitor._device_list.keys()))
@@ -183,12 +183,12 @@ def main(args):
                         'message': generated_text
                     }
                 )
-                print("\033[36m", f"{status=}", "\033[0m", sep="")
+                print("\033[36m", f"{datetime.now()} {status=}", "\033[0m", sep="")
 
             elif status == 'wait_for_silent':
                 if not voice_monitor._is_speaking:
                     status = 'synthesis_voice'
-                    print("\033[36m", f"{status=}", "\033[0m", sep="")
+                    print("\033[36m", f"{datetime.now()} {status=}", "\033[0m", sep="")
 
             elif status == 'synthesis_voice':
                 sender.send_dict(
@@ -201,10 +201,10 @@ def main(args):
                     content={}
                 )
                 status = 'wait_for_prompt'  
-                print("\033[36m", f"{status=}", "\033[0m", sep="")
+                print("\033[36m", f"{datetime.now()} {status=}", "\033[0m", sep="")
 
             else:
-                print("\033[36m", f"Unknown status : {status=}", "\033[0m", sep="")
+                print("\033[36m", f"Unknown status : {datetime.now()} {status=}", "\033[0m", sep="")
         
 
 
