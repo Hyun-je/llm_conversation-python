@@ -10,6 +10,7 @@ import voice
 from udp_broadcaster import *
 import uuid
 import threading
+import random
 
 
 
@@ -66,7 +67,7 @@ class VoiceMonitor:
 
     def on_received_start_speaking(self, data, addr):
         self._is_speaking = True
-        self._timeout = 10
+        self._timeout = 60
 
     def on_received_end_speaking(self, data, addr):
         self._is_speaking = False
@@ -130,10 +131,23 @@ def main(args):
 
     # Run UDPPeriodicSender for device ping
     def ping_data_callback():
-        return 'device_ping', {}
+        return 'device_ping', {'device_type': 'talker'}
     ping_sender = UDPPeriodicSender(uuid=device_uuid, interval=1, data_callback=ping_data_callback)
     ping_sender.start()
 
+
+    sender = UDPSender()
+
+    if args.mode == 'active':
+        time.sleep(5)
+        random_device = random.choice(list(device_monitor._device_list.keys()))
+        sender.send_dict(
+            message_type='text_generation',
+            content={
+                'receiver': random_device,
+                'message': 'hi, how are you?'
+            }
+        )
 
 
     while True:
@@ -159,6 +173,14 @@ def main(args):
                 print(f'{generated_text=}')
                 voice_stream = synthesizer.make_stream(generated_text)
                 status = 'wait_for_silent'
+                random_device = random.choice(list(device_monitor._device_list.keys()))
+                sender.send_dict(
+                    message_type='text_generation',
+                    content={
+                        'receiver': random_device,
+                        'message': generated_text
+                    }
+                )
                 print("\033[36m", f"{status=}", "\033[0m", sep="")
 
             elif status == 'wait_for_silent':
@@ -167,8 +189,16 @@ def main(args):
                     print("\033[36m", f"{status=}", "\033[0m", sep="")
 
             elif status == 'synthesis_voice':
+                sender.send_dict(
+                    message_type='start_speaking',
+                    content={}
+                )
                 synthesizer.play_stram()
-                status = 'wait_for_prompt'
+                sender.send_dict(
+                    message_type='end_speaking',
+                    content={}
+                )
+                status = 'wait_for_prompt'  
                 print("\033[36m", f"{status=}", "\033[0m", sep="")
 
             else:
@@ -179,8 +209,7 @@ def main(args):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', required=False, help='어느 것을 요구하냐')
-    parser.add_argument('--env', required=False, default='dev', help='실행환경은 뭐냐')
+    parser.add_argument('--mode', required=True, default='passive')
     args = parser.parse_args()
 
     main(args)
