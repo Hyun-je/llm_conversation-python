@@ -179,7 +179,8 @@ def main(args):
                 filtered_text = ''.join(c for c in generated_text if ord(c) < 128)
                 filtered_text = re.sub(' +',' ',filtered_text)
                 filtered_text = re.sub('\n+','\n',filtered_text)
-                print(f'filtered_text={filtered_text}')
+                filtered_text = filtered_text.lower()
+                print(f'{filtered_text=}')
                 voice_stream = synthesizer.make_stream(filtered_text)
                 status = 'wait_for_silent'
                 random_device = random.choice(list(device_monitor._device_list.keys()))
