@@ -172,7 +172,7 @@ def main(args):
             elif status == 'text_generation':
                 received_text = text_generation_monitor._received_text
                 text_generation_monitor._received_text = None
-                generated_text = llm_client.chat(received_text)[:128]
+                generated_text = llm_client.chat(received_text)[:512]
                 voice_stream = synthesizer.make_stream(generated_text)
                 status = 'wait_for_silent'
                 random_device = random.choice(list(device_monitor._device_list.keys()))
