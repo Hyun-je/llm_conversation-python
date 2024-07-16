@@ -6,6 +6,7 @@ openai
 piper-tts; sys_platform == 'linux'
 pyaudio; sys_platform == 'linux'
 pyobjc; sys_platform == 'darwin'
+onnxruntime==1.17.1
 
 # Network
 udp_broadcaster @ git+https://github.com/Hyun-je/UDP_Broadcaster-python
